@@ -6,9 +6,11 @@ import com.example.studentmanagement.entity.Student;
 import com.example.studentmanagement.repository.StudentRepository;
 import com.example.studentmanagement.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +64,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public Page<Student> getAllStudents(int page, int size, String sortBy, String sortDir, String keyword, String department) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (keyword != null && !keyword.isEmpty()) {
+            return studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(keyword, keyword, pageable);
+        }
+
+        if (department != null && !department.isEmpty()) {
+            return studentRepository.findByDepartmentIgnoreCase(department, pageable);
+        }
+
+        return studentRepository.findAll(pageable);
     }
 }

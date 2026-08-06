@@ -1,7 +1,7 @@
 package com.example.studentmanagement.service;
 
 import com.example.studentmanagement.entity.Student;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface StudentService {
     
@@ -13,5 +13,5 @@ public interface StudentService {
     
     Student getStudentById(Long id);
     
-    List<Student> getAllStudents();
+    Page<Student> getAllStudents(int page, int size, String sortBy, String sortDir, String keyword, String department);
 }
