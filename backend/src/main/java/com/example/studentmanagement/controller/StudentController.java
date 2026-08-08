@@ -5,11 +5,14 @@ import com.example.studentmanagement.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.studentmanagement.service.FileStorageService;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @CrossOrigin("*") // Enables CORS for frontend integration
 @RestController
@@ -18,6 +21,15 @@ import jakarta.validation.Valid;
 public class StudentController {
 
     private final StudentService studentService;
+    private final FileStorageService fileStorageService;
+
+    @PostMapping("/{id}/upload-image")
+    public Student uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        String fileUrl = fileStorageService.storeFile(file);
+        Student student = studentService.getStudentById(id);
+        student.setProfilePictureUrl(fileUrl);
+        return studentService.updateStudent(id, student);
+    }
 
     // POST /api/students
     @PostMapping
@@ -45,6 +57,12 @@ public class StudentController {
     @ResponseStatus(HttpStatus.OK)
     public Student getStudentById(@PathVariable Long id) {
         return studentService.getStudentById(id);
+    }
+
+    /** The signed-in student can view their own profile without access to other records. */
+    @GetMapping("/me")
+    public Student getMyProfile(@AuthenticationPrincipal Student student) {
+        return studentService.getStudentById(student.getId());
     }
 
     // PUT /api/students/{id}

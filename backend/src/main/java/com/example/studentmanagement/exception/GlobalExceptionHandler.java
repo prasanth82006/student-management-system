@@ -52,9 +52,10 @@ public class GlobalExceptionHandler {
     // Handle all other global exceptions (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {
+        ex.printStackTrace(); // Print to console for debugging
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
-                "An unexpected error occurred",
+                "An unexpected error occurred: " + ex.getMessage(),
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);

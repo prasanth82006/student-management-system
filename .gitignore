@@ -1,0 +1,9 @@
+# Local secrets and machine-specific Spring configuration
+backend/src/main/resources/application.properties
+
+# Frontend dependencies and generated bundles
+frontend/node_modules/
+frontend/dist/
+
+# Local Maven cache
+.m2/
